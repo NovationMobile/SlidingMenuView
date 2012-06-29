@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item name="novation__fragment_main" type="id"/>
+    <item name="novation__fragment_menu" type="id"/>
+
+</resources>
