@@ -4,7 +4,6 @@ package com.novationmobile.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -13,7 +12,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Scroller;
 
-public class SlidingView extends ViewGroup {
+class SlidingView extends ViewGroup {
+
+    @SuppressWarnings("unused")
+    private static final String TAG= "SlidingView";
 
     /*
      * How long to animate between screens when programmatically setting with
@@ -39,7 +41,7 @@ public class SlidingView extends ViewGroup {
     private static final int TOUCH_STATE_HORIZONTAL_SCROLLING= 1;
     private static final int TOUCH_STATE_VERTICAL_SCROLLING= -1;
 
-    private static final float DEFAULT_SLIDER_WIDTH= .8f;
+    private static final float DEFAULT_SLIDER_WIDTH= .85f;
 
     private static final long MAX_CLICK_DELAY= 700;
 
@@ -110,9 +112,6 @@ public class SlidingView extends ViewGroup {
         }
 
         if (mFirstLayout) {
-            if (BuildConfig.DEBUG) {
-               Log.v(VIEW_LOG_TAG, "First layout"); 
-            }
             close();
             mFirstLayout= false;
         } else if (width != mLastSeenLayoutWidth) { // Width has changed
@@ -240,6 +239,11 @@ public class SlidingView extends ViewGroup {
                 break;
         }
 
+        if (mVelocityTracker != null) {
+            mVelocityTracker.recycle();
+            mVelocityTracker= null;
+        }
+
         return intercept;
     }
 
@@ -253,6 +257,8 @@ public class SlidingView extends ViewGroup {
 
         final int action= ev.getAction();
         final float x= ev.getX();
+
+        boolean result= true;
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
@@ -273,9 +279,14 @@ public class SlidingView extends ViewGroup {
                     mTouchState= TOUCH_STATE_HORIZONTAL_SCROLLING;
                 }
 
-                if (!wantsEvent(ev)) {
+                if (shouldIgnoreEvent(ev)) {
+                    if (mVelocityTracker != null) {
+                        mVelocityTracker.recycle();
+                        mVelocityTracker= null;
+                    }
+
                     mTouchState= TOUCH_STATE_REST;
-                    return false;
+                    result= false;
                 }
 
                 break;
@@ -326,26 +337,31 @@ public class SlidingView extends ViewGroup {
                     } else {
                         snapToDestination();
                     }
-
-                    if (mVelocityTracker != null) {
-                        mVelocityTracker.recycle();
-                        mVelocityTracker= null;
-                    }
                 } else if (mTouchState == TOUCH_STATE_REST
                         && ev.getEventTime() - ev.getDownTime() < MAX_CLICK_DELAY) {
                     animateClose();
                 }
 
+                if (mVelocityTracker != null) {
+                    mVelocityTracker.recycle();
+                    mVelocityTracker= null;
+                }
+
                 mTouchState= TOUCH_STATE_REST;
                 break;
             case MotionEvent.ACTION_CANCEL:
+                if (mVelocityTracker != null) {
+                    mVelocityTracker.recycle();
+                    mVelocityTracker= null;
+                }
+
                 mTouchState= TOUCH_STATE_REST;
                 break;
             default:
                 break;
         }
 
-        return true;
+        return result;
     }
 
     @Override
@@ -445,7 +461,6 @@ public class SlidingView extends ViewGroup {
         } else {
             mScroller.startScroll(getScrollX(), 0, delta, 0, duration);
         }
-
         invalidate();
     }
 
@@ -455,8 +470,18 @@ public class SlidingView extends ViewGroup {
         }
     }
 
-    boolean wantsEvent(MotionEvent ev) {
-        return ev.getX() >= mChild.getLeft();
+    boolean shouldIgnoreEvent(MotionEvent ev) {
+
+        float x= ev.getX();
+        float y= ev.getY();
+
+        int left= mChild.getLeft() - getScrollX();
+        int right= mChild.getRight() - getScrollX();
+        int top= mChild.getTop();
+        int bottom= mChild.getBottom();
+
+        return x < left || x > right
+                || y < top || y > bottom;
     }
 
     public interface OnStateChangedListener {
