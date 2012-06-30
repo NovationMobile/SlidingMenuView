@@ -39,7 +39,7 @@ public class SlidingView extends ViewGroup {
     private static final int TOUCH_STATE_HORIZONTAL_SCROLLING= 1;
     private static final int TOUCH_STATE_VERTICAL_SCROLLING= -1;
 
-    private static final float DEFAULT_SLIDER_WIDTH= .9f;
+    private static final float DEFAULT_SLIDER_WIDTH= .8f;
 
     private static final long MAX_CLICK_DELAY= 700;
 
