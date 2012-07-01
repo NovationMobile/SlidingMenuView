@@ -1,4 +1,4 @@
 SlidingMenuView
 ===============
 
-Various reusable components.
+A sliding side navigation menu view.
