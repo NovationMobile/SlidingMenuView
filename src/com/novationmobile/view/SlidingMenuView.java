@@ -70,10 +70,18 @@ public class SlidingMenuView extends FrameLayout {
                 .commit();
     }
 
+    public Fragment getMainFragment(FragmentManager manager) {
+        return manager.findFragmentById(R.id.novation__fragment_main);
+    }
+
     public void setMenuFragment(Fragment fragment, FragmentManager manager) {
         manager.beginTransaction()
                 .replace(R.id.novation__fragment_menu, fragment)
                 .commit();
+    }
+
+    public Fragment getMenuFragment(FragmentManager manager) {
+        return manager.findFragmentById(R.id.novation__fragment_menu);
     }
 
     /**
@@ -90,6 +98,10 @@ public class SlidingMenuView extends FrameLayout {
 
     public float getMenuWidth() {
         return mSlider.getSliderWidth();
+    }
+
+    public boolean isOpen() {
+        return mSlider.isOpen();
     }
 
     public void open() {

@@ -225,7 +225,7 @@ class SlidingView extends ViewGroup {
                  * No motion yet, but register the coordinates so we can check
                  * for intercept at the next MOVE event.
                  */
-                if (mOpen) {
+                if (isOpen()) {
                     // If it is open, force intereception of all events.
                     intercept= true;
                 }
@@ -372,6 +372,10 @@ class SlidingView extends ViewGroup {
         }
     }
 
+    public boolean isOpen() {
+        return mOpen;
+    }
+
     public void open() {
         setCurrentState(true, false);
     }
@@ -389,11 +393,11 @@ class SlidingView extends ViewGroup {
     }
 
     public void toggle() {
-        setCurrentState(!mOpen, false);
+        setCurrentState(!isOpen(), false);
     }
 
     public void animateToggle() {
-        setCurrentState(!mOpen, true);
+        setCurrentState(!isOpen(), true);
     }
 
     public float getSliderWidth() {
@@ -417,7 +421,7 @@ class SlidingView extends ViewGroup {
             snapToState(open, ANIMATION_SCREEN_SET_DURATION_MILLIS);
         } else {
             mOpen= open;
-            notifyListener(mOpen);
+            notifyListener(isOpen());
             int loc= open ? 0 : getActualSliderWidth();
             scrollTo(loc, 0);
         }
@@ -430,12 +434,12 @@ class SlidingView extends ViewGroup {
 
     private void snapToDestination() {
         final int screenWidth= getWidth();
-        boolean open= mOpen;
-        int deltaX= getScrollX() - (!mOpen ? getActualSliderWidth() : 0);
+        boolean open= isOpen();
+        int deltaX= getScrollX() - (!isOpen() ? getActualSliderWidth() : 0);
 
-        if (mOpen && ((screenWidth / FRACTION_OF_SCREEN_WIDTH_FOR_SWIPE) < deltaX)) {
+        if (isOpen() && ((screenWidth / FRACTION_OF_SCREEN_WIDTH_FOR_SWIPE) < deltaX)) {
             open= false;
-        } else if (!mOpen && ((screenWidth / FRACTION_OF_SCREEN_WIDTH_FOR_SWIPE) < -deltaX)) {
+        } else if (!isOpen() && ((screenWidth / FRACTION_OF_SCREEN_WIDTH_FOR_SWIPE) < -deltaX)) {
             open= true;
         }
 
