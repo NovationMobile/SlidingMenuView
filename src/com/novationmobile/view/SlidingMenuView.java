@@ -4,6 +4,7 @@ package com.novationmobile.view;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -65,8 +66,11 @@ public class SlidingMenuView extends FrameLayout {
     }
 
     public void setMainFragment(Fragment fragment, FragmentManager manager) {
-        manager.beginTransaction()
-                .replace(R.id.novation__fragment_main, fragment)
+        setMainFragment(fragment, manager.beginTransaction());
+    }
+
+    public void setMainFragment(Fragment fragment, FragmentTransaction transaction) {
+        transaction.replace(R.id.novation__fragment_main, fragment)
                 .commit();
     }
 
@@ -75,8 +79,11 @@ public class SlidingMenuView extends FrameLayout {
     }
 
     public void setMenuFragment(Fragment fragment, FragmentManager manager) {
-        manager.beginTransaction()
-                .replace(R.id.novation__fragment_menu, fragment)
+        setMenuFragment(fragment, manager.beginTransaction());
+    }
+
+    public void setMenuFragment(Fragment fragment, FragmentTransaction transaction) {
+        transaction.replace(R.id.novation__fragment_menu, fragment)
                 .commit();
     }
 
